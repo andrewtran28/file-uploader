@@ -1,0 +1,32 @@
+{
+  "name": "file-uploader",
+  "version": "1.0.0",
+  "description": "A personal storage service (similar to Google Drive) that demonstrates the use of Express and Prisma ORM functionality.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrewtran28/file-uploader.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andrewtran28/file-uploader/issues"
+  },
+  "homepage": "https://github.com/andrewtran28/file-uploader#readme",
+  "dependencies": {
+    "@prisma/client": "^6.2.1",
+    "@quixo3/prisma-session-store": "^3.1.13",
+    "express": "^4.21.2",
+    "express-async-handler": "^1.2.0",
+    "express-session": "^1.18.1",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "prisma": "^6.2.1"
+  }
+}
