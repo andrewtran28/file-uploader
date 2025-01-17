@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <header id="header">
+      <!-- <a href="/"><img id="logo" src="/logo.png"></a> -->
+      <a href="/">LOGO HERE</a>
+      <div class="header-right">
+        <% if (currentUser) { %>
+        <span
+          >Welcome,
+          <a href="/user/<%= currentUser.user_id %>">
+            <%= currentUser.username %>
+          </a>
+        </span>
+        <span><a href="/logout">Log Out</a></span>
+        <% } else { %>
+        <a href="/login">
+          <button id="sign-in" class="btn-green">Sign-In</button>
+        </a>
+        <br />
+        <span>Don't have an account? <a href="/signup">Sign-Up</a>!</span>
+        <% } %>
+      </div>
+    </header>
+  </body>
+</html>

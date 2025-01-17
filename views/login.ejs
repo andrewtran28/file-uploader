@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Login</title>
+  </head>
+  <body>
+    <%- include('partials/header') %>
+
+    <h1>Log In</h1>
+    <main>
+      <form action="/login" method="POST">
+        <label for="username">Username: </label>
+        <input
+          id="username"
+          name="username"
+          type="text"
+          maxLength="50"
+          required
+        />
+        <br /><br />
+        <label for="password">Password: </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          maxLength="50"
+          required
+        />
+        <% if (typeof error !== "undefined" && error) { %>
+        <br />
+        <span class="error"><%= error %></span>
+        <% } %>
+        <br />
+        <br />
+        <button class="btn-green" type="submit">Log In</button>
+      </form>
+    </main>
+  </body>
+</html>
