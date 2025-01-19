@@ -7,8 +7,13 @@
       <div class="header-right">
         <% if (currentUser) { %>
         <span
+          ><a href="/user/<%= currentUser.id %>/upload" class="btn-green"
+            >+ Upload</a
+          ></span
+        >
+        <span
           >Welcome,
-          <a href="/user/<%= currentUser.user_id %>">
+          <a href="/user/<%= currentUser.id %>">
             <%= currentUser.username %>
           </a>
         </span>
