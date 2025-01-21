@@ -7,32 +7,44 @@ const addUser = async (username, password) => {
       data: {
         username: username,
         password: password,
-        //Create a home folder for the new user.
         folders: {
           create: { name: "Home" },
         },
       },
     });
-  } catch (err) {
-    console.log("Error adding new user to database: ", error);
+  } catch (error) {
+    console.error("Error adding new user to database: ", error);
     throw error;
   }
 };
 
-const getFolderById = async (id) => {
-  const parsedId = parseInt(id);
-  if (isNaN(parsedId)) {
+const getFolderById = async (folder_id) => {
+  if (isNaN(folder_id)) {
     throw new Error("Invalid ID");
   }
   return await prisma.folder.findUnique({
-    where: { id: parsedId },
+    where: { id: folder_id },
     include: { subfolders: true },
   });
 };
 
+const handleFileUpload = async (fileName, size, user_id, folder_id) => {
+  await prisma.file.create({
+    data: {
+      name: fileName,
+      size,
+      user_id,
+      folder_id,
+    },
+  });
+}
+
 const getFilesByFolderId = async (id) => {
   return await prisma.file.findMany({
     where: { folder_id: parseInt(id) },
+    orderBy: {
+      name: 'asc',
+    },
   });
 };
 
@@ -55,13 +67,6 @@ const getHomeFolderById = async (user_id) => {
   return homeFolderId.id;
 };
 
-//May be obsolete--change to getSubfolders for current folder
-// const getFoldersByUserId = async (user_id) => {
-//   return await prisma.folder.findMany({
-//     where: { user_id: parseInt(user_id) },
-//   });
-// };
-
 const createFolder = async (name, user_id, parent_id) => {
   return await prisma.folder.create({
     data: { name, user_id, parent_id },
@@ -70,17 +75,22 @@ const createFolder = async (name, user_id, parent_id) => {
 
 const deleteFolder = async (folder_id, parent_id) => {
   //Move all subfolders (and files) of folder_id to parent_id
+  await prisma.file.updateMany({
+    where: { folder_id: folder_id },
+    data: { folder_id: parent_id }
+  });
+
   await prisma.folder.updateMany({
     where: { parent_id: folder_id },
     data: { parent_id: parent_id }
-  })
+  });
 
   await prisma.folder.delete({
-    where: { id: parseInt(deletedFolder) },
+    where: { id: parseInt(folder_id) },
   });
 };
 
-const editFolder = async (folder_id, folder_name) => {
+const renameFolder = async (folder_id, folder_name) => {
   return await prisma.folder.update({
     where: { id: folder_id },
     data: { name: folder_name },
@@ -90,11 +100,11 @@ const editFolder = async (folder_id, folder_name) => {
 module.exports = {
   addUser,
   // getFilesByUserId,
+  handleFileUpload,
   getFilesByFolderId,
   getHomeFolderById,
   getFolderById,
-  // getFoldersByUserId,
   createFolder,
   deleteFolder,
-  editFolder,
+  renameFolder,
 };

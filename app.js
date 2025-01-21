@@ -9,6 +9,7 @@ const { PrismaClient } = require("@prisma/client");
 const { signupValidator } = require("./controllers/validator.js");
 const indexController = require("./controllers/indexController");
 const folderController = require("./controllers/folderController.js");
+const fileController = require("./controllers/fileController.js");
 
 const app = express();
 const prisma = new PrismaClient();
@@ -52,19 +53,18 @@ app.use((req, res, next) => {
 //Multer middleware configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    if (!req.params.id) {
+    if (!req.user.id) {
       return cb(
         new Error("User ID not provided in request parameters."),
         false
       );
     }
 
-    const userFolder = path.join(__dirname, `uploads/${req.params.id}`);
-    if (!fs.existsSync(userFolder)) {
-      fs.mkdirSync(userFolder, { recursive: true });
+    const destinationFolder = path.join(__dirname, `uploads/${req.user.id}`);
+    if (!fs.existsSync(destinationFolder )) {
+      fs.mkdirSync(destinationFolder , { recursive: true });
     }
-
-    cb(null, userFolder);
+    cb(null, destinationFolder);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
@@ -101,14 +101,14 @@ app.post("/login", indexController.handleLogIn);
 app.get("/logout", indexController.handleLogOut);
 //DELETE USER
 
-app.get("/user/:id/folder/:folderId?", isAuth, folderController.getUserPage);
+app.get("/folder/:folderId?", isAuth, folderController.getUserPage);
 
-app.get("/user/:id/upload", isAuth, folderController.getUpload);
-app.post("/user/:id/upload", isAuth, upload.single("file"), folderController.handleUpload);
+// app.get("/folder/:folderId/upload", isAuth, folderController.getUpload);
+app.post("/folder/:folderId/upload", isAuth, upload.single('file'), fileController.handleUpload);
 
-app.post("/user/:id/folder/:folderId?/create", isAuth, folderController.createFolder);
-app.post("/user/:id/folder/:folderId?/delete", isAuth, folderController.deleteFolder);
-// app.post("/user/:id/folder/:folderId?/edit", isAuth, indexController.renameFolder);
+app.post("/folder/:folderId?/create", isAuth, folderController.createFolder);
+app.post("/folder/:folderId?/delete", isAuth, folderController.deleteFolder);
+app.post("/folder/:folderId?/rename", isAuth, folderController.renameFolder);
 
 app.use(indexController.getErrorPage);
 
