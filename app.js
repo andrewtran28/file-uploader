@@ -8,6 +8,7 @@ const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
 const { PrismaClient } = require("@prisma/client");
 const { signupValidator } = require("./controllers/validator.js");
 const indexController = require("./controllers/indexController");
+const folderController = require("./controllers/folderController.js");
 
 const app = express();
 const prisma = new PrismaClient();
@@ -36,7 +37,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //Authentication setup
-const isAuthenticated = (req, res, next) => {
+const isAuth = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
   }
@@ -98,32 +99,16 @@ app.post("/signup", signupValidator, indexController.handleSignUp);
 app.get("/login", indexController.getLogIn);
 app.post("/login", indexController.handleLogIn);
 app.get("/logout", indexController.handleLogOut);
-
-app.get(
-  "/user/:id/folder/:folderId?",
-  isAuthenticated,
-  indexController.getUserPage
-);
-app.get("/user/:id/upload", isAuthenticated, indexController.getUpload);
-app.post(
-  "/user/:id/upload",
-  isAuthenticated,
-  upload.single("file"),
-  indexController.handleUpload
-);
 //DELETE USER
 
-app.post(
-  "/user/:id/folder/:folderId?/createfolder",
-  isAuthenticated,
-  indexController.createFolder
-);
-app.post(
-  "/user/:id/folder/:folderId?/deletefolder",
-  isAuthenticated,
-  indexController.deleteFolder
-);
-//MOVE OR RENAME FOLDER
+app.get("/user/:id/folder/:folderId?", isAuth, folderController.getUserPage);
+
+app.get("/user/:id/upload", isAuth, folderController.getUpload);
+app.post("/user/:id/upload", isAuth, upload.single("file"), folderController.handleUpload);
+
+app.post("/user/:id/folder/:folderId?/create", isAuth, folderController.createFolder);
+app.post("/user/:id/folder/:folderId?/delete", isAuth, folderController.deleteFolder);
+// app.post("/user/:id/folder/:folderId?/edit", isAuth, indexController.renameFolder);
 
 app.use(indexController.getErrorPage);
 

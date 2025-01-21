@@ -32,7 +32,7 @@ const getFolderById = async (id) => {
 
 const getFilesByFolderId = async (id) => {
   return await prisma.file.findMany({
-    where: { folderId: parseInt(id) },
+    where: { folder_id: parseInt(id) },
   });
 };
 
