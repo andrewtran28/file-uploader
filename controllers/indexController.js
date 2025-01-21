@@ -3,19 +3,19 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const passport = require("../config/passport");
 const query = require("../db/queries");
-// const path = require("node:path");
 
-const getIndex = asyncHandler(async (req, res) => {
+const getIndex = (req, res) => {
   res.render("index");
-});
+};
 
-const getSignup = asyncHandler(async (req, res) => {
+const getSignup = (req, res) => {
   res.render("signup", { errors: null });
   res.end();
-});
+};
 
 const handleSignUp = asyncHandler(async (req, res, next) => {
   const result = validationResult(req);
+  console.log(result);
   if (result.isEmpty()) {
     bcrypt.hash(req.body.password, 5, async (err, hashedPassword) => {
       if (err) {
@@ -33,9 +33,9 @@ const handleSignUp = asyncHandler(async (req, res, next) => {
   }
 });
 
-const getLogIn = asyncHandler(async (req, res) => {
+const getLogIn = (req, res) => {
   res.render("login", { errors: null });
-});
+};
 
 const handleLogIn = asyncHandler(async (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
@@ -45,7 +45,7 @@ const handleLogIn = asyncHandler(async (req, res, next) => {
     }
     req.logIn(user, (err) => {
       if (err) return next(err);
-      return res.redirect("/");
+      return res.redirect(`/user/${req.user.id}/folder`);
     });
   })(req, res, next);
 });
@@ -60,15 +60,8 @@ const handleLogOut = (req, res, next) => {
   });
 };
 
-const getUserPage = asyncHandler(async (req, res) => {
-  const user = res.locals.currentUser;
-  const files = await query.getFilesByUserId(user.id);
-  res.render("userPage", { title: user.username, files: files });
-});
-
-const getUpload = asyncHandler(async (req, res) => {
+const getUpload = async (req, res) => {
   try {
-    // Validate that the :id in the URL matches the authenticated user
     if (req.params.id !== req.user.id.toString()) {
       return res.status(403).send("Unauthorized.");
     }
@@ -84,9 +77,9 @@ const getUpload = asyncHandler(async (req, res) => {
     console.error(err);
     res.status(500).send("An error occurred while loading the page.");
   }
-});
+};
 
-const handleUpload = asyncHandler(async (req, res) => {
+const handleUpload = async (req, res) => {
   try {
     if (req.params.id !== req.user.id.toString()) {
       return res.status(403).json({ message: "Unauthorized." });
@@ -97,16 +90,88 @@ const handleUpload = asyncHandler(async (req, res) => {
     }
     console.log("File uploaded successfully:", req.file);
 
-    return res.redirect("/");
+    return res.redirect(`/user/${res.locals.currentUser.id}`);
   } catch (error) {
     console.error("Error uploading file:", error);
     return res.status(500).send("An error occurred while uploading the file.");
   }
-});
+};
 
-const getErrorPage = asyncHandler(async (req, res) => {
+const getUserPage = async (req, res) => {
+  const user = res.locals.currentUser;
+  const userId = parseInt(req.params.id);
+  // const files = await query.getFilesByUserId(user.id);
+  let folderId = req.params.folderId
+    ? parseInt(req.params.folderId)
+    : await query.getHomeFolderById(userId);
+    console.log(folderId);
+  const currentFolder = await query.getFolderById(folderId);
+  console.log(currentFolder);
+
+  res.render("userPage", {
+    title: user.username,
+    currentFolder: currentFolder,
+    files: files,
+  });
+};
+
+const createFolder = async (req, res) => {
+  const userId = parseInt(req.params.id);
+
+  let folderId = req.params.folderId
+    ? parseInt(req.params.folderId)
+    : await query.getHomeFolderById(userId);
+
+  const { folderName } = req.body;
+
+  try {
+    await query.createFolder(folderName, req.user.id, folderId);
+    return res.redirect(`/user/${userId}/folder/${folderId}`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("An error occurred while creating the folder.");
+  }
+};
+
+const deleteFolder = async (req, res) => {
+  const folderId = parseInt(req.params.folderId);
+
+  try {
+    const folder = await query.getFolderById(folderId);
+    if (!folder || folder.user_id !== req.user.id) {
+      return res.status(403).send("Invalid folder or access denied.");
+    }
+
+    await query.deleteFolder(folderId, folder.parent_id);
+
+    res.redirect(`/user/${req.user.id}/folder/${folder.parent_id}`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("An error occurred while deleting the folder.");
+  }
+};
+
+// const editFolder = async (req, res) => {
+//   const { folderId } = req.params;
+//   const { folderName } = req.body;
+
+//   try {
+//     const folder = await query.getFolderById(parseInt(folderId));
+//     if (!folder || folder.userId !== req.user.id) {
+//       return res.status(403).send("Invalid folder or access denied.");
+//     }
+
+//     await query.updateFolder(folderId, folderName);
+//     res.redirect("/upload");
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("An error occurred while editing the folder.");
+//   }
+// };
+
+const getErrorPage = (req, res) => {
   res.status(404).render("error404");
-});
+};
 
 module.exports = {
   getIndex,
@@ -118,5 +183,8 @@ module.exports = {
   getUserPage,
   getUpload,
   handleUpload,
+  createFolder,
+  deleteFolder,
+  // editFolder,
   getErrorPage,
 };

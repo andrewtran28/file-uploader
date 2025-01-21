@@ -59,7 +59,6 @@ const storage = multer.diskStorage({
     }
 
     const userFolder = path.join(__dirname, `uploads/${req.params.id}`);
-    // Ensure the user folder exists
     if (!fs.existsSync(userFolder)) {
       fs.mkdirSync(userFolder, { recursive: true });
     }
@@ -100,28 +99,31 @@ app.get("/login", indexController.getLogIn);
 app.post("/login", indexController.handleLogIn);
 app.get("/logout", indexController.handleLogOut);
 
-app.get("/user/:id", isAuthenticated, indexController.getUserPage);
+app.get(
+  "/user/:id/folder/:folderId?",
+  isAuthenticated,
+  indexController.getUserPage
+);
 app.get("/user/:id/upload", isAuthenticated, indexController.getUpload);
-// app.post(
-//   "/user/:id/upload",
-//   isAuthenticated,
-//   upload.single("file"),
-//   indexController.handleUpload
-// );
 app.post(
   "/user/:id/upload",
   isAuthenticated,
   upload.single("file"),
-  (err, req, res, next) => {
-    if (err instanceof multer.MulterError) {
-      return res.status(400).send({ error: err.message });
-    } else if (err) {
-      return res.status(400).send({ error: err.message });
-    }
-    next();
-  },
   indexController.handleUpload
 );
+//DELETE USER
+
+app.post(
+  "/user/:id/folder/:folderId?/createfolder",
+  isAuthenticated,
+  indexController.createFolder
+);
+app.post(
+  "/user/:id/folder/:folderId?/deletefolder",
+  isAuthenticated,
+  indexController.deleteFolder
+);
+//MOVE OR RENAME FOLDER
 
 app.use(indexController.getErrorPage);
 

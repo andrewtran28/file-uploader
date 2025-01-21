@@ -24,8 +24,8 @@ model User {
   id          Int       @id @default(autoincrement())
   username    String    @unique @db.VarChar(25)
   password    String    @db.VarChar(100)
-  File        File[]
-  Folder      Folder[]
+  files       File[]
+  folders     Folder[]
 }
 
 model Folder {
@@ -34,6 +34,10 @@ model Folder {
   user_id     Int
   user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
   files       File[]
+  parent_id   Int?
+  parent      Folder?   @relation("Subfolders", fields: [parent_id], references: [id])
+  subfolders  Folder[]  @relation("Subfolders")
+  createdAt   DateTime  @default(now())
 }
 
 model File {
@@ -44,4 +48,5 @@ model File {
   user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
   folder_id   Int
   folder      Folder    @relation(fields: [folder_id], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
 }
