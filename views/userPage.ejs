@@ -5,45 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= currentUser.username %></title>
     <style>
-      /* Initially hide the rename button */
-      .rename-button {
+      /* Initially hide the action buttons */
+      .action-buttons {
         display: none;
         margin-left: 10px;
         cursor: pointer;
       }
-  
-      /* Show the rename button when hovering over the folder name */
-      #folder-name-container:hover .rename-button {
+
+      /* Show the action buttons when hovering over the file or folder name */
+      .hover-container:hover .action-buttons {
         display: inline-block;
       }
-  
-      /* Styling for the folder name container */
-      #folder-name-container {
+
+      /* Styling for the folder/file name container */
+      .hover-container {
         display: inline-flex;
         align-items: center;
       }
-  
+
+      .action-buttons button {
+        margin-right: 10px;
+      }
+
+      /* Rename form styling */
       .rename-form {
         display: inline-block;
         margin-top: 10px;
       }
-  
-      /* Styling for buttons */
-      .rename-form button {
-        margin-right: 10px;
+
+      /* Hide the rename form initially */
+      #rename-form {
+        display: none;
       }
     </style>
   </head>
   <body>
     <%- include('partials/header') %>
     <h1>Files Page: <%= currentUser.username %></h1>
-    <div id="folder-name-container">
+    <!-- Folder Name Section -->
+    <div id="folder-name-container" class="hover-container">
       <h1 id="folder-name" class="folder-name">Current Folder: <%= currentFolder.name %></h1>
-      <button id="rename-btn" class="rename-button">Rename</button>
+      <button id="rename-btn" class="action-buttons">Rename</button>
     </div>
 
-    <!-- Rename Folder Form -->
-    <form id="rename-form" class="rename-form" action="/folder/<%= currentFolder.id %>/rename" method="POST" style="display: none;">
+    <form id="rename-form" class="rename-form" action="/folder/<%= currentFolder.id %>/rename" method="POST">
       <input
         type="text"
         id="rename-input"
@@ -58,29 +63,37 @@
 
     <h1>Folders</h1>
     <% if (currentFolder.subfolders.length > 0) { %>
-
       <% currentFolder.subfolders.forEach((folder) => { %>
-        <div class="folder">
-          <a href="/folder/<%= folder.id %>">
-            <%= folder.name %>
-          </a>
+        <div class="folder hover-container">
+          <a href="/folder/<%= folder.id %>"><%= folder.name %></a>
           <form action="/folder/<%= folder.id %>/delete" method="POST" style="display:inline;">
             <button type="submit" onclick="return confirm('Are you sure you want to delete this folder?');">Delete</button>
           </form>
         </div>
       <% }) %>
     <% } %>
-
     <% if (currentFolder.parent_id !== null) { %>
       <a href="/folder/<%= currentFolder.parent_id %>">
         Go back to parent directory
       </a>
     <% } %>
-    
+
     <% if (files.length > 0) { %>
       <h1>Files</h1>
       <% files.forEach((file) => { %>
-        <div class="file"><%= file.name %></div>
+        <div class="file hover-container">
+          <span><a href="<%= file.url %>"><%= file.name %></a></span>
+          <span><%= file.size %></span>
+          <!-- Action buttons for file (download/delete) -->
+          <div class="action-buttons">
+            <a href="<%= file.url %>" download><button>Download</button></a>
+            <form action="/folder/<%= currentFolder.id %>/deleteFile" method="POST" style="display:inline;">
+              <input type="hidden" name="fileId" value="<%= file.id %>">
+              <button type="submit" onclick="return confirm('Are you sure you want to delete this file?');">Delete</button>
+            </form>
+          </div>
+        </div>
+        <br>
       <% }) %>
     <% } %>
 
@@ -96,7 +109,7 @@
 
     <h2>Upload a File</h2>
     <form
-      action="/folder/<%= currentFolder.id %>/upload"
+      action="/folder/<%= currentFolder.id %>/uploadFile"
       method="POST"
       enctype="multipart/form-data"
     >
@@ -112,7 +125,7 @@
         document.getElementById('rename-btn').style.display = 'none';
         document.getElementById('rename-form').style.display = 'inline-block';
       });
-  
+
       // Hide the rename form when the "Cancel" button is clicked
       document.getElementById('cancel-btn').addEventListener('click', function() {
         document.getElementById('folder-name').style.display = 'block';

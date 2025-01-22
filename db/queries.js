@@ -28,32 +28,39 @@ const getFolderById = async (folder_id) => {
   });
 };
 
-const handleFileUpload = async (fileName, size, user_id, folder_id) => {
+const getFileById = async (fileId) => {
+  return await prisma.file.findUnique({
+    where: { id: fileId },
+  });
+};
+
+const handleFileUpload = async (fileName, size, url, public_id, user_id, folder_id) => {
   await prisma.file.create({
     data: {
       name: fileName,
       size,
+      url,
+      public_id,
       user_id,
       folder_id,
     },
   });
-}
+};
+
+const deleteFile = async (fileId) => {
+  await prisma.file.delete({
+    where: { id: fileId },
+  });
+};
 
 const getFilesByFolderId = async (id) => {
   return await prisma.file.findMany({
     where: { folder_id: parseInt(id) },
     orderBy: {
-      name: 'asc',
+      name: "asc",
     },
   });
 };
-
-//May be obsolete--change to getFolderFiles for current folder
-// const getFilesByUserId = async (user_id) => {
-//   return await prisma.file.findMany({
-//     where: { user_id: parseInt(user_id) },
-//   });
-// };
 
 const getHomeFolderById = async (user_id) => {
   const homeFolderId = await prisma.folder.findFirst({
@@ -74,15 +81,14 @@ const createFolder = async (name, user_id, parent_id) => {
 };
 
 const deleteFolder = async (folder_id, parent_id) => {
-  //Move all subfolders (and files) of folder_id to parent_id
   await prisma.file.updateMany({
     where: { folder_id: folder_id },
-    data: { folder_id: parent_id }
+    data: { folder_id: parent_id },
   });
 
   await prisma.folder.updateMany({
     where: { parent_id: folder_id },
-    data: { parent_id: parent_id }
+    data: { parent_id: parent_id },
   });
 
   await prisma.folder.delete({
@@ -99,8 +105,9 @@ const renameFolder = async (folder_id, folder_name) => {
 
 module.exports = {
   addUser,
-  // getFilesByUserId,
   handleFileUpload,
+  deleteFile,
+  getFileById,
   getFilesByFolderId,
   getHomeFolderById,
   getFolderById,

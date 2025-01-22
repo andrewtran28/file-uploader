@@ -1,43 +1,67 @@
 // const asyncHandler = require("express-async-handler");
 const query = require("../db/queries");
 
+const formatBytes = (bytes) => {
+  if (bytes === 0) return "0 Bytes";
+
+  const units = ["Bytes", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+  const k = 1024; // Size of 1 KB in bytes
+  const i = Math.floor(Math.log(bytes) / Math.log(k)); // Determine the unit
+
+  let size;
+  if (i === 0) {
+    size = bytes;
+  } else {
+    size = bytes / Math.pow(k, i);
+    size = i === 1 ? Math.floor(size) : size.toFixed(1);
+  }
+  
+  return `${size} ${units[i]}`;
+}
+
 const getUserPage = async (req, res) => {
   try {
     const currentUser = res.locals.currentUser;
     const userId = req.user.id;
+
     if (!req.user || userId !== currentUser.id) {
       return res.status(403).send("Unauthorized.");
     }
 
-    const folderId = req.params.folderId
-      ? parseInt(req.params.folderId)
-      : await query.getHomeFolderById(userId);
+    if (!req.params.folderId) {
+      const homeFolderId = await query.getHomeFolderById(userId);
+      return res.redirect(`/folder/${homeFolderId}`);
+    }
+
+    const folderId = parseInt(req.params.folderId);
     const currentFolder = await query.getFolderById(folderId);
     if (!currentFolder) {
       return res.status(404).render("error404");
     }
     console.log("Current Folder: ", currentFolder);
     const files = await query.getFilesByFolderId(folderId);
+    const formattedFiles = files.map(file => ({
+      ...file,
+      size: formatBytes(file.size),
+    }));
+
+    console.log("formattedFiles: ", formattedFiles);
   
     res.render("userPage", {
       title: currentUser.username,
       currentFolder: currentFolder,
-      files: files,
+      files: formattedFiles,
     });
 
   } catch(error) {
     console.error(error);
     res.status(500).send("An error occurred while loading the user page.");
   }
-
 };
 
 const createFolder = async (req, res) => {
   const userId = parseInt(req.user.id);
-
-  const folderId = req.params.folderId
-    ? parseInt(req.params.folderId)
-    : await query.getHomeFolderById(userId);
+  const folderId = parseInt(req.params.folderId);
 
   const { folderName } = req.body;
 
