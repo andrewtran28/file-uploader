@@ -2,7 +2,7 @@ const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const passport = require("../config/passport");
-const query = require("../db/queries");
+const query = require("../prisma/queries");
 
 const getIndex = (req, res) => {
   res.render("index");

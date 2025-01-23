@@ -1,4 +1,4 @@
-const query = require("../db/queries");
+const query = require("../prisma/queries");
 const cloudinary = require("cloudinary").v2;
 
 cloudinary.config({
@@ -71,7 +71,7 @@ const handleDelete = async (req, res) => {
     const cloudinaryResponse = await cloudinary.uploader.destroy(file.public_id, {
       resource_type: resourceType,
     });
-    
+
     if (cloudinaryResponse.result !== 'ok') {
       return res.status(500).send("Error deleting file from Cloudinary.");
     }

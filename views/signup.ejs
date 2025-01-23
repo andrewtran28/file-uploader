@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign Up</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.png">
   </head>
   <body>
     <%- include('partials/header') %>
@@ -31,7 +33,6 @@
           />
           <%- include('partials/customErrors', {errors: errors, selector:
           'password'}) %>
-          <br />
           <button class="btn-green">Sign Up</button>
         </form>
         <br />

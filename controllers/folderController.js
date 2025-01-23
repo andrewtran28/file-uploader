@@ -1,5 +1,4 @@
-// const asyncHandler = require("express-async-handler");
-const query = require("../db/queries");
+const query = require("../prisma/queries");
 
 const formatBytes = (bytes) => {
   if (bytes === 0) return "0 Bytes";

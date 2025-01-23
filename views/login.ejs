@@ -4,12 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>User Login</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.png">
   </head>
   <body>
     <%- include('partials/header') %>
 
-    <h1>Log In</h1>
     <main>
+      <h1>Log In</h1>
       <form action="/login" method="POST">
         <label for="username">Username: </label>
         <input
@@ -36,6 +38,11 @@
         <br />
         <button class="btn-green" type="submit">Log In</button>
       </form>
+
+      <br>
+      <span class="logout">Don't have an account? <a href="/signup">Sign-Up</a>!</span>
+      <br>
+      <a href="/">Return to home page</a>
     </main>
   </body>
 </html>

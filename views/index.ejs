@@ -4,10 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Homepage</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.png">
   </head>
 
   <body>
     <%- include('partials/header') %>
-    <h1>This is the index page</h1>
+      <div id="index-cont">
+        <img src="/logo-emblem.png">
+        <div>
+          <h1>Upside Download</h1>
+          <h2>Upload and view files online</h2>
+          <h3>A simple web-application that allows for file uploading, downloading, and sharing. Cloudinary is used as our cloud storage service. </h3>
+            <a href="/folder">
+              <button class="btn-green">Continue to Upside Download</button>
+            </a>
+        </div>
+      </div>
+
+    <%- include('partials/footer') %>
   </body>
 </html>

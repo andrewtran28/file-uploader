@@ -1,0 +1,238 @@
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+body {
+  --header: #171717;
+  --background: #eeeeee;
+  --text: #424242;
+  --text-gray: #f2f2f2;
+  --text-hover: #9ec100;
+  --header-text: #458a00;
+  
+  background-color: var(--background);
+  color: var(--text);
+  font-family: 'PT Sans', Arial, Helvetica, sans-serif;
+  font-size: 1.25rem;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+a {
+  color: var(--header-text);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--text-hover);
+}
+
+#header {
+  color: var(--text-gray);
+  background-color: var(--header);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px 0;
+  font-size: 2rem;
+  font-weight: 600;
+}
+#header .icon {
+  height: 0.75lh;
+  vertical-align: -10%;
+}
+
+#logo {
+  display: flex;
+  align-items: center;
+  margin: 0 40px;
+  height: 2lh;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+  margin: 0 40px;
+}
+
+.logout {
+  font-size: 1.25rem;
+  margin-top: 10px;
+}
+
+label, input {
+  color: var(--text);
+  font-size: 1lh;
+  margin: 0 5px;
+}
+
+button {
+  color: var(--text-gray);
+  border: none;
+  border-radius: 5px;
+  font-size: 1.2rem;
+  padding: 10px;
+  margin: 0 5px;
+}
+
+.btn-green, .btn-red {
+  align-self: center;
+}
+
+.btn-green {
+  background-color: #00bd19;
+}
+.btn-green:hover {
+  background-color: #00a516;
+}
+.btn-green:active {
+  background-color: #007610;
+}
+
+.btn-red {
+  background-color: #dc3000;
+}
+.btn-red:hover {
+  background-color: #c02900;
+}
+.btn-red:active {
+  background-color: #9f2300;
+}
+
+#index-cont {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 40px;
+}
+
+#index-cont div {
+  max-width: 600px;
+}
+
+.action-buttons button {
+  margin: 0;
+  padding: 0 10px;
+}
+
+.action-buttons {
+  display: none;
+}
+
+h1 .hover-cont {
+  position: absolute;
+  margin: 0 10px;
+}
+
+.hover-cont button {
+  margin: 0 5px;
+}
+
+.hover-cont:hover .action-buttons {
+  display: inline-flex;
+}
+
+.hover-cont input {
+  font-weight: 600;
+  font-size: 2.5rem;
+  height: 1lh;
+}
+
+#folder-name-cont {
+  display: inline-flex;
+}
+
+#rename-form {
+  display: none;
+}
+
+main {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 20px;
+}
+
+main h1 {
+  margin: 20px 0 10px 0;
+}
+
+main h2 {
+  font-size: 2rem;
+  margin: 10px 0;
+}
+
+.folders-header, .files-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.folders-cont, .files-cont {
+  display: flex;
+  flex-direction: column;
+  margin-top: 30px;
+}
+
+.folder, .file {
+  border-bottom: 1px solid var(--text-hover);
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 1.3rem;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.icon {
+  cursor: pointer;
+  height: 1lh;
+  margin: 0 10px;
+  vertical-align: top;
+}
+
+.folder-name, .file-name {
+  display: flex;
+  font-weight: 600;
+  max-width: 700px;
+  width: 100%;
+}
+
+.file-info {
+  display: flex;
+  width: 100%;
+}
+
+.file-size {
+  margin: 0px 10px;
+  max-width: 150px;
+  width: 100%;
+  text-align: right;
+}
+
+.error {
+  color: #dc3000;
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0.5lh 0 1lh 0;
+  padding: 0;
+}
+
+.error li {
+  list-style: none;
+}
+
+#footer {
+  background-color: var(--header);
+  color: var(--text-gray);
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 10px 0;
+  font-size: 1rem;
+  align-items: center;
+}
