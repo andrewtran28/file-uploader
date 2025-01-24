@@ -82,13 +82,13 @@ button {
 }
 
 .btn-green {
-  background-color: #00bd19;
+  background-color: #009f15;
 }
 .btn-green:hover {
-  background-color: #00a516;
+  background-color: #008f13;
 }
 .btn-green:active {
-  background-color: #007610;
+  background-color: #00630d;
 }
 
 .btn-red {

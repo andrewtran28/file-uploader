@@ -37,14 +37,11 @@ const getUserPage = async (req, res) => {
     if (!currentFolder) {
       return res.status(404).render("error404");
     }
-    console.log("Current Folder: ", currentFolder);
     const files = await query.getFilesByFolderId(folderId);
     const formattedFiles = files.map(file => ({
       ...file,
       size: formatBytes(file.size),
     }));
-
-    console.log("formattedFiles: ", formattedFiles);
   
     res.render("userPage", {
       title: currentUser.username,
@@ -65,7 +62,7 @@ const createFolder = async (req, res) => {
   const { folderName } = req.body;
 
   try {
-    await query.createFolder(folderName, req.user.id, folderId);
+    await query.createFolder(folderName, userId, folderId);
     return res.redirect(`/folder/${folderId}`);
   } catch (err) {
     console.error(err);

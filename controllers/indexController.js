@@ -15,7 +15,6 @@ const getSignup = (req, res) => {
 
 const handleSignUp = asyncHandler(async (req, res, next) => {
   const result = validationResult(req);
-  console.log(result);
   if (result.isEmpty()) {
     bcrypt.hash(req.body.password, 5, async (err, hashedPassword) => {
       if (err) {
