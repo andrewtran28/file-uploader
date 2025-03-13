@@ -21,25 +21,16 @@ const handleUpload = async (req, res) => {
     let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
 
     const result = await cloudinary.uploader.upload(dataURI, {
-        folder: `upsidedownload/${userId}`,
-        resource_type: "auto",  // This automatically detects file type (image, video, etc.)
-        public_id: `${Date.now()}-${req.file.originalname}`,
-      });
+      folder: `upsidedownload/${userId}`,
+      resource_type: "auto", // This automatically detects file type (image, video, etc.)
+      public_id: `${Date.now()}-${req.file.originalname}`,
+    });
 
     if (result.bytes > 3 * 1024 * 1024) {
       return res.status(400).json({ message: "File size exceeds 3MB." });
     }
 
-    await query.handleFileUpload(
-      req.file.originalname,
-      req.file.size,
-      result.url,
-      result.public_id,
-      userId,
-      folderId,
-    );
-
-    console.log("File uploaded successfully:", req.file);
+    await query.handleFileUpload(req.file.originalname, req.file.size, result.url, result.public_id, userId, folderId);
 
     res.redirect(`/folder/${folderId}`);
   } catch (error) {
@@ -58,11 +49,11 @@ const handleDelete = async (req, res) => {
     }
 
     //Cloudinary requires the resource_type for destroying assets.
-    const fileExtension = file.name.split('.').pop().toLowerCase();
+    const fileExtension = file.name.split(".").pop().toLowerCase();
     let resourceType;
-    if (['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(fileExtension)) {
+    if (["jpg", "jpeg", "png", "gif", "bmp"].includes(fileExtension)) {
       resourceType = "image";
-    } else if (['mp4', 'mov', 'avi', 'mkv', 'mp3'].includes(fileExtension)) {
+    } else if (["mp4", "mov", "avi", "mkv", "mp3"].includes(fileExtension)) {
       resourceType = "video";
     } else {
       resourceType = "raw";
@@ -72,7 +63,7 @@ const handleDelete = async (req, res) => {
       resource_type: resourceType,
     });
 
-    if (cloudinaryResponse.result !== 'ok') {
+    if (cloudinaryResponse.result !== "ok") {
       return res.status(500).send("Error deleting file from Cloudinary.");
     }
 

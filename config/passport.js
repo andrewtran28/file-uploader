@@ -10,7 +10,6 @@ passport.use(
       const user = await prisma.user.findUnique({
         where: { username: username },
       });
-      console.log(user);
 
       if (!user) {
         return done(null, false, {
