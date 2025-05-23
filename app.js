@@ -53,6 +53,11 @@ app.use((req, res, next) => {
 
 //Multer memory storage setup
 const storage = multer.memoryStorage();
+const upload = multer({
+  storage,
+  limits: { fileSize: 3 * 1024 * 1024 }, // Max file size: 3MB
+  fileFilter,
+});
 
 const fileFilter = (req, file, cb) => {
   const allowedExtensions = [".jpeg", ".jpg", ".bmp", ".gif", ".png", ".pdf", ".txt"];
@@ -61,18 +66,9 @@ const fileFilter = (req, file, cb) => {
   if (allowedExtensions.includes(extension)) {
     cb(null, true);
   } else {
-    cb(
-      new Error("Invalid file type. Only JPEG, BMP, PNG, GIF, PDF, and TXT are allowed."),
-      false
-    );
+    cb(new Error("Invalid file type. Only JPEG, BMP, PNG, GIF, PDF, and TXT are allowed."), false);
   }
 };
-
-const upload = multer({
-  storage,
-  limits: { fileSize: 3 * 1024 * 1024 }, // Max file size: 3MB
-  fileFilter,
-});
 
 //Routing
 app.get("/", indexController.getIndex);
@@ -89,7 +85,7 @@ app.post("/folder/:folderId?/create", isAuth, folderController.createFolder);
 app.post("/folder/:folderId?/delete", isAuth, folderController.deleteFolder);
 app.post("/folder/:folderId?/rename", isAuth, folderController.renameFolder);
 
-app.post("/folder/:folderId/uploadFile", isAuth, upload.single("file"), fileController.handleUpload);
+app.post("/folder/:folderId/uploadFile", isAuth, upload.single("file"), fileController.handleUpload); //"file" must match the name of the input field in the HTML form
 app.post("/folder/:folderId/deleteFile", isAuth, fileController.handleDelete);
 //RENAME FILE
 
