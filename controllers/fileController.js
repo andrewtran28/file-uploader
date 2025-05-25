@@ -1,10 +1,14 @@
 const query = require("../prisma/queries");
-const cloudinary = require("cloudinary").v2;
+const path = require("node:path");
+const { S3Client, PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+const bucketName = process.env.BUCKET_NAME;
+const s3 = new S3Client({
+  region: process.env.BUCKET_REGION,
+  credentials: {
+    accessKeyId: process.env.ACCESS_KEY,
+    secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  },
 });
 
 const handleUpload = async (req, res) => {
@@ -16,21 +20,20 @@ const handleUpload = async (req, res) => {
       return res.status(400).json({ message: "No file uploaded." });
     }
 
-    //Formats file Buffer for Cloudinary upload
-    const b64 = Buffer.from(req.file.buffer).toString("base64");
-    let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+    const publicId = `${Date.now()}-${req.file.originalname}`;
 
-    const result = await cloudinary.uploader.upload(dataURI, {
-      folder: `upsidedownload/${userId}`,
-      resource_type: "auto", // This automatically detects file type (image, video, etc.)
-      public_id: `${Date.now()}-${req.file.originalname}`,
-    });
+    const fileUrl = `https://${bucketName}.s3.${process.env.BUCKET_REGION}.amazonaws.com/uploads/${userId}/${publicId}`;
+    await query.handleFileUpload(req.file.originalname, req.file.size, fileUrl, publicId, userId, folderId);
 
-    if (result.bytes > 3 * 1024 * 1024) {
-      return res.status(400).json({ message: "File size exceeds 3MB." });
-    }
-
-    await query.handleFileUpload(req.file.originalname, req.file.size, result.url, result.public_id, userId, folderId);
+    //AWS S3
+    const params = {
+      Bucket: bucketName,
+      Key: `uploads/${userId}/${publicId}`,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+    };
+    const command = new PutObjectCommand(params);
+    await s3.send(command);
 
     res.redirect(`/folder/${folderId}`);
   } catch (error) {
@@ -48,26 +51,15 @@ const handleDelete = async (req, res) => {
       return res.status(404).json({ message: "File not found." });
     }
 
-    //Cloudinary requires the resource_type for destroying assets.
-    const fileExtension = file.name.split(".").pop().toLowerCase();
-    let resourceType;
-    if (["jpg", "jpeg", "png", "gif", "bmp"].includes(fileExtension)) {
-      resourceType = "image";
-    } else if (["mp4", "mov", "avi", "mkv", "mp3"].includes(fileExtension)) {
-      resourceType = "video";
-    } else {
-      resourceType = "raw";
-    }
-
-    const cloudinaryResponse = await cloudinary.uploader.destroy(file.public_id, {
-      resource_type: resourceType,
-    });
-
-    if (cloudinaryResponse.result !== "ok") {
-      return res.status(500).send("Error deleting file from Cloudinary.");
-    }
-
     await query.deleteFile(fileId);
+
+    const deleteParams = {
+      Bucket: bucketName,
+      Key: `uploads/${file.user_id}/${file.public_id}`,
+    };
+    const deleteCommand = new DeleteObjectCommand(deleteParams);
+    await s3.send(deleteCommand);
+
     res.redirect(`/folder/${file.folder_id}`);
   } catch (error) {
     console.error("Error deleting file:", error);

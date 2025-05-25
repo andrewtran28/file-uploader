@@ -6,11 +6,25 @@ const path = require("node:path");
 const passport = require("./config/passport");
 const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
 const { PrismaClient } = require("@prisma/client");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { signupValidator } = require("./controllers/validator.js");
 
 const indexController = require("./controllers/indexController");
 const folderController = require("./controllers/folderController.js");
 const fileController = require("./controllers/fileController.js");
+
+const BUCKET_NAME = process.env.BUCKET_NAME;
+const BUCKET_REGION = process.env.BUCKET_REGION;
+const ACCESS_KEY = process.env.ACCESS_KEY;
+const SECRET_ACCESS_KEY = process.env.SECRET_ACCESS_KEY;
+
+const s3 = new S3Client({
+  region: BUCKET_REGION,
+  credentials: {
+    accessKeyId: ACCESS_KEY,
+    secretAccessKey: SECRET_ACCESS_KEY,
+  },
+});
 
 const app = express();
 const prisma = new PrismaClient();
@@ -56,19 +70,7 @@ const storage = multer.memoryStorage();
 const upload = multer({
   storage,
   limits: { fileSize: 3 * 1024 * 1024 }, // Max file size: 3MB
-  fileFilter,
 });
-
-const fileFilter = (req, file, cb) => {
-  const allowedExtensions = [".jpeg", ".jpg", ".bmp", ".gif", ".png", ".pdf", ".txt"];
-  const extension = path.extname(file.originalname).toLowerCase();
-
-  if (allowedExtensions.includes(extension)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Invalid file type. Only JPEG, BMP, PNG, GIF, PDF, and TXT are allowed."), false);
-  }
-};
 
 //Routing
 app.get("/", indexController.getIndex);
