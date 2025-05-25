@@ -71,6 +71,14 @@ const upload = multer({
   storage,
   limits: { fileSize: 3 * 1024 * 1024 }, // Max file size: 3MB
 });
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).send("File size exceeds the 3MB limit.");
+    }
+  }
+  next(err);
+});
 
 //Routing
 app.get("/", indexController.getIndex);
@@ -87,6 +95,8 @@ app.post("/folder/:folderId?/create", isAuth, folderController.createFolder);
 app.post("/folder/:folderId?/delete", isAuth, folderController.deleteFolder);
 app.post("/folder/:folderId?/rename", isAuth, folderController.renameFolder);
 
+app.get("/folder/:folderId/:fileId/url", isAuth, fileController.getFileUrl);
+app.get("/folder/:folderId/:fileId/download", isAuth, fileController.getFileUrl);
 app.post("/folder/:folderId/uploadFile", isAuth, upload.single("file"), fileController.handleUpload); //"file" must match the name of the input field in the HTML form
 app.post("/folder/:folderId/deleteFile", isAuth, fileController.handleDelete);
 //RENAME FILE

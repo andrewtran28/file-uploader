@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= currentUser.username %></title>
-    <link rel="stylesheet" href="/styles.css">
-    <link rel="icon" type="image/x-icon" href="/favicon.png">
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" type="image/x-icon" href="/favicon.png" />
   </head>
   <body>
     <%- include('partials/header') %>
@@ -15,17 +15,13 @@
         <div id="folder-name-cont" class="hover-cont">
           <span id="folder-name" class="folder-name"><%= currentFolder.name %></span>
 
-           <div class="action-buttons">
+          <div class="action-buttons">
             <button id="rename-btn">
-              <img class="icon" src="/icons/edit.svg" alt="Rename">
+              <img class="icon" src="/icons/edit.svg" alt="Rename" />
             </button>
-           </div>
+          </div>
 
-          <form
-            id="rename-form"
-            action="/folder/<%= currentFolder.id %>/rename"
-            method="POST"
-          >
+          <form id="rename-form" action="/folder/<%= currentFolder.id %>/rename" method="POST">
             <input
               type="text"
               id="rename-input"
@@ -40,22 +36,22 @@
         </div>
       </h1>
       <% if (currentFolder.parent_id !== null) { %>
-        <a href="/folder/<%= currentFolder.parent_id %>">
-          <img class="icon" src="/icons/parent-folder.svg">Go to parent directory
-        </a>
+      <a href="/folder/<%= currentFolder.parent_id %>">
+        <img class="icon" src="/icons/parent-folder.svg" />Go to parent directory
+      </a>
       <% } %>
 
       <div class="folders-cont">
         <div class="folders-header">
           <h2>Folders</h2>
           <button id="create-folder-btn" class="btn-green">
-            <img class="icon" src="/icons/folder-add.svg"> Create Folder
+            <img class="icon" src="/icons/folder-add.svg" /> Create Folder
           </button>
           <form
             id="create-folder-form"
             action="/folder/<%= currentFolder.id %>/create"
             method="POST"
-            style="display: none;"
+            style="display: none"
           >
             <label for="newFolderName">Folder Name: </label>
             <input type="text" id="newFolderName" name="folderName" maxLength="50" required />
@@ -64,20 +60,18 @@
           </form>
         </div>
         <% currentFolder.subfolders.forEach((folder) => { %>
-          <div class="folder hover-cont">
-            <span class="folder-name">
-              <a href="/folder/<%= folder.id %>">
-                <img class="icon" src="/icons/folder.svg"> <%= folder.name %>
-              </a>
-            </span>
-            <div class="action-buttons">
-              <form action="/folder/<%= folder.id %>/delete" method="POST" style="display:inline;">
-                <button type="submit" onclick="return confirm('Are you sure you want to delete this folder?');">
-                  <img class="icon" src="/icons/trash.svg">
-                </button>
-              </form>
-            </div>
+        <div class="folder hover-cont">
+          <span class="folder-name">
+            <a href="/folder/<%= folder.id %>"> <img class="icon" src="/icons/folder.svg" /> <%= folder.name %> </a>
+          </span>
+          <div class="action-buttons">
+            <form action="/folder/<%= folder.id %>/delete" method="POST" style="display: inline">
+              <button type="submit" onclick="return confirm('Are you sure you want to delete this folder?');">
+                <img class="icon" src="/icons/trash.svg" />
+              </button>
+            </form>
           </div>
+        </div>
         <% }) %>
       </div>
 
@@ -85,14 +79,15 @@
         <div class="files-header">
           <h2>Files</h2>
           <button id="upload-file-btn" class="btn-green">
-            <img class="icon" src="/icons/upload.svg"> Upload File
+            <img class="icon" src="/icons/upload.svg" /> Upload File
           </button>
+
           <form
             id="upload-file-form"
             action="/folder/<%= currentFolder.id %>/uploadFile"
             method="POST"
             enctype="multipart/form-data"
-            style="display: none;"
+            style="display: none"
           >
             <input id="file" type="file" name="file" required />
             <button class="btn-green" type="submit">Upload</button>
@@ -100,29 +95,29 @@
           </form>
         </div>
         <% files.forEach((file) => { %>
-          <div class="file hover-cont">
-            <div class="file-info">
-              <div class="file-name">
-                <img class="icon" src="/icons/file.svg">
-                <a href="<%= file.url %>"><%= file.name %></a>
-              </div>
-              <span class="file-size"><%= file.size %></span>
+        <div class="file hover-cont">
+          <div class="file-info">
+            <div class="file-name">
+              <img class="icon" src="/icons/file.svg" />
+              <a href="/folder/<%= currentFolder.id %>/<%= file.id %>/url" target="_blank"><%= file.name %></a>
             </div>
-            <div class="action-buttons">
-              <a href="<%= file.url %>" download>
-                <button><img class="icon" src="/icons/download.svg"></button>
-              </a>
-              <form action="/folder/<%= currentFolder.id %>/deleteFile" method="POST" style="display:inline;">
-                <input type="hidden" name="fileId" value="<%= file.id %>">
-                <button type="submit" onclick="return confirm('Are you sure you want to delete this file?');">
-                  <img class="icon" src="/icons/trash.svg">
-                </button>
-              </form>
-            </div>
+            <span class="file-size"><%= file.size %></span>
           </div>
+          <div class="action-buttons">
+            <button onclick="downloadFile(<%= currentFolder.id %>, <%= file.id %>)">
+              <img class="icon" src="/icons/download.svg" />
+            </button>
+            <form action="/folder/<%= currentFolder.id %>/deleteFile" method="POST" style="display: inline">
+              <input type="hidden" name="fileId" value="<%= file.id %>" />
+              <button type="submit" onclick="return confirm('Are you sure you want to delete this file?');">
+                <img class="icon" src="/icons/trash.svg" />
+              </button>
+            </form>
+          </div>
+        </div>
         <% }) %>
       </div>
     </main>
-    <script src="/js/toggleButtons.js"></script>
+    <script src="/js/scripts.js"></script>
   </body>
 </html>
