@@ -14,6 +14,50 @@ async function downloadFile(folderId, fileId) {
   }
 }
 
+async function shareFile(folderId, fileId) {
+  try {
+    const res = await fetch(`/folder/${folderId}/${fileId}/share`);
+    if (!res.ok) throw new Error("Failed to get shareable link");
+
+    const data = await res.json();
+    openModal(data.url);
+  } catch (err) {
+    alert("Error generating shareable link");
+  }
+}
+
+function openModal(link) {
+  const modal = document.getElementById("shareModal");
+  const input = document.getElementById("shareLinkInput");
+  input.value = link;
+  modal.style.display = "block";
+}
+
+function closeModal() {
+  document.getElementById("shareModal").style.display = "none";
+}
+
+function copyLink() {
+  const input = document.getElementById("shareLinkInput");
+  input.select();
+  input.setSelectionRange(0, 99999); // For mobile
+  document.execCommand("copy");
+
+  const confirmation = document.getElementById("copyConfirmation");
+  confirmation.style.display = "block";
+
+  setTimeout(() => {
+    confirmation.style.display = "none";
+  }, 3000);
+}
+
+window.onclick = function (event) {
+  const modal = document.getElementById("shareModal");
+  if (event.target === modal) {
+    closeModal();
+  }
+};
+
 function setupToggleButtons(buttonId, formId, cancelButtonId, otherElementId = null) {
   const button = document.getElementById(buttonId);
   const form = document.getElementById(formId);

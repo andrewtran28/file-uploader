@@ -107,6 +107,9 @@
             <button onclick="downloadFile(<%= currentFolder.id %>, <%= file.id %>)">
               <img class="icon" src="/icons/download.svg" />
             </button>
+            <button onclick="shareFile(<%= currentFolder.id %>, <%= file.id %>)">
+              <img class="icon" src="/icons/share.svg" />
+            </button>
             <form action="/folder/<%= currentFolder.id %>/deleteFile" method="POST" style="display: inline">
               <input type="hidden" name="fileId" value="<%= file.id %>" />
               <button type="submit" onclick="return confirm('Are you sure you want to delete this file?');">
@@ -116,6 +119,19 @@
           </div>
         </div>
         <% }) %>
+      </div>
+
+      <div id="shareModal" class="modal" style="display: none">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal()">&times;</span>
+          <h2>Shareable Link</h2>
+          <div class="share-link-cont">
+            <button class="btn-green" onclick="copyLink()"><img class="icon" src="/icons/copy.svg" /></button>
+            <input type="text" id="shareLinkInput" readonly onclick="this.select()" />
+          </div>
+          <p id="copyConfirmation" style="display: none; color: #458a00">Share link copied to clipboard!</p>
+          This share link is valid for 24 hours.
+        </div>
       </div>
     </main>
     <script src="/js/scripts.js"></script>

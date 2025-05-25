@@ -50,6 +50,31 @@ const getFileUrl = async (req, res) => {
   }
 };
 
+const getShareableUrl = async (req, res) => {
+  try {
+    const fileId = parseInt(req.params.fileId);
+    const folderId = parseInt(req.params.folderId);
+
+    const file = await query.getFileById(fileId);
+
+    if (!file || file.user_id !== req.user.id || file.folder_id !== folderId) {
+      return res.status(403).json({ message: "Unauthorized or file not found" });
+    }
+
+    const command = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: `uploads/${file.user_id}/${file.public_id}`,
+    });
+
+    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 60 * 24 }); // 24 hours
+
+    return res.json({ url: signedUrl });
+  } catch (err) {
+    console.error("Error generating shareable link:", err);
+    return res.status(500).json({ message: "Failed to generate shareable link" });
+  }
+};
+
 const handleUpload = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -107,6 +132,7 @@ const handleDelete = async (req, res) => {
 
 module.exports = {
   getFileUrl,
+  getShareableUrl,
   handleUpload,
   handleDelete,
 };

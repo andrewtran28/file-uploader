@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
 body {
   --header: #171717;
@@ -7,10 +7,10 @@ body {
   --text-gray: #f2f2f2;
   --text-hover: #9ec100;
   --header-text: #458a00;
-  
+
   background-color: var(--background);
   color: var(--text);
-  font-family: 'PT Sans', Arial, Helvetica, sans-serif;
+  font-family: "PT Sans", Arial, Helvetica, sans-serif;
   font-size: 1.25rem;
   margin: 0;
   padding: 0;
@@ -62,7 +62,8 @@ a:hover {
   margin-top: 10px;
 }
 
-label, input {
+label,
+input {
   color: var(--text);
   font-size: 1lh;
   margin: 0 5px;
@@ -75,9 +76,14 @@ button {
   font-size: 1.2rem;
   padding: 10px;
   margin: 0 5px;
+
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
 }
 
-.btn-green, .btn-red {
+.btn-green,
+.btn-red {
   align-self: center;
 }
 
@@ -163,20 +169,23 @@ main h2 {
   margin: 10px 0;
 }
 
-.folders-header, .files-header {
+.folders-header,
+.files-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
 
-.folders-cont, .files-cont {
+.folders-cont,
+.files-cont {
   display: flex;
   flex-direction: column;
   margin-top: 30px;
 }
 
-.folder, .file {
+.folder,
+.file {
   border-bottom: 1px solid var(--text-hover);
   display: flex;
   align-items: center;
@@ -193,7 +202,8 @@ main h2 {
   vertical-align: top;
 }
 
-.folder-name, .file-name {
+.folder-name,
+.file-name {
   display: flex;
   font-weight: 600;
   max-width: 700px;
@@ -235,4 +245,43 @@ main h2 {
   padding: 10px 0;
   font-size: 1rem;
   align-items: center;
+}
+
+.modal {
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: var(--background);
+  margin: 15% auto;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.share-link-cont {
+  display: flex;
+  margin: 20px 0;
+}
+
+.close {
+  float: right;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+#shareLinkInput {
+  width: 100%;
+  margin: 0px;
+  padding: 10px;
+  font-size: 1rem;
 }

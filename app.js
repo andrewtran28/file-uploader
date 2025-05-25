@@ -97,6 +97,8 @@ app.post("/folder/:folderId?/rename", isAuth, folderController.renameFolder);
 
 app.get("/folder/:folderId/:fileId/url", isAuth, fileController.getFileUrl);
 app.get("/folder/:folderId/:fileId/download", isAuth, fileController.getFileUrl);
+app.get("/folder/:folderId/:fileId/share", isAuth, fileController.getShareableUrl);
+
 app.post("/folder/:folderId/uploadFile", isAuth, upload.single("file"), fileController.handleUpload); //"file" must match the name of the input field in the HTML form
 app.post("/folder/:folderId/deleteFile", isAuth, fileController.handleDelete);
 //RENAME FILE
